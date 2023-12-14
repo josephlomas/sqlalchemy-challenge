@@ -1,4 +1,4 @@
-# Import the dependencies.
+# Import dependencies.
 from flask import Flask, jsonify
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -9,10 +9,10 @@ import datetime as dt
 #################################################
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
-# reflect an existing database into a new model
-Base = automap_base ()
+# Reflect an existing database into a new model
+Base = automap_base()
 
-# reflect the tables
+# Reflect the tables
 Base.prepare(engine, reflect=True)
 Base.classes.keys()
 
@@ -20,7 +20,7 @@ Base.classes.keys()
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
-# Create our session (link) from Python to the DB
+# Create session from Python to database
 session = Session(engine)
 
 #################################################
@@ -42,7 +42,7 @@ def home():
             f"/api/v1.0/2016-08-23/2017-08-23 - Temperature summary for a specified start and end date<br>"
         )
         
-# Convert query results from precipitation analysis to a dictionary
+# Convert the query results from your precipitation analysis
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
@@ -51,7 +51,7 @@ def precipitation():
     session.close()
     return jsonify(prcp_dict)
 
-# Return a JSON list of stations from the dataset
+# Return a JSON list of stations from the dataset.
 @app.route("/api/v1.0/stations")
 def stations():
     station_results = session.query(Station.station).all()
@@ -59,7 +59,7 @@ def stations():
     session.close()
     return jsonify(station_list)
 
-# Query the dates and temperature observations of the most-active station for the previous year of data
+# Query the dates and temperature observations of the most-active station for the previous year of data.
 @app.route("/api/v1.0/tobs")
 def tobs():
     most_active_station = 'USC00519281'
@@ -70,9 +70,8 @@ def tobs():
     session.close()
     return jsonify(temperature_data)
 
-# Return a list of the min temp, avg temp, and max temp for a specified start date
+# Return a JSON list of the minimum temperature, the average temperature, and the maximum temperature for a specified start or start-end range.
 @app.route("/api/v1.0/<start>")
-# Return a list of the min temp, avg temp, and max temp for a specifed start-end range
 @app.route("/api/v1.0/<start>/<end>")
 def start_end(start, end=None):
     sel = [Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
